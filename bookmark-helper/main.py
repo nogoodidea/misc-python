@@ -5,7 +5,11 @@ targetFile = open("/home/user/.config/homepage.html","r")
 targetText = targetFile.readlines()
 targetFile.close()
 form = cgi.FildStorage()
-if "title" not in form or "state" not in form:
+
+print("Content-Type: text/html\n\n")
+#for testing
+state = 0
+if "title" not in form or "addr" not in form:
     print("<title>ERROR</title>")
     sys.exit()
 
