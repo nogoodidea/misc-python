@@ -6,20 +6,25 @@ targetText = targetFile.readlines()
 targetFile.close()
 
 # handles seting state, defalt state is 1
-if len(sys.argv) >= 1:
-    state = int(sys.argv[1])
+print(sys.argv)
+if len(sys.argv) != 2:
+    state = "HELP"
 else:
-    state = 1
-if state < 2:
+    state = sys.argv[1]
+if state == "HELP":
+    print("APPEND appends section to end of page\nADD appends link to section\nDEL deleats link\nDELSEC deleats the targeted section header\nHELP prints help")
+    sys.exit()
+
+if state == "APPEND" or state == "ADD":
     print("title")
     title = input()
-    if state == 1:
+    if state == "ADD":
         print("addr")
         addr = input()
 # state
 # 0 appends a section to the page
 # 1 appends a link to the end of the selected section
-# 2 edit mode? lets you remove bookmarks by section TODO
+# 2 edit mode? lets you remove bookmarks by section 
 
 
 def appendLink(title,addr):
@@ -31,33 +36,30 @@ sectionList = []
 sectionListLine = []
 for i in range(1,len(targetText)):
     line = targetText[i]
-    if line[1]+line[2] == "h1":
+    if line[0]+line[1]+line[2]+line[3] == "<h1>":
         line = line.replace("</h1>\n","")
         line = line.replace("<h1>","")
         sectionList.append(line)
         sectionListLine.append(i)
-print(sectionList)
-print(sectionListLine)
 
 #sets target section
-if state != 0:
+if state != "APPEND":
     sectionReturnString = ""
     for i in range(0,len(sectionList)):
         sectionReturnString = sectionReturnString + sectionList[i] + " - " + str(i) + "\n"
-    print(sectionReturnString)
     targetSection = int(input())
-
-if state == 0:
+else:
     targetText.insert(len(targetText)-2,appendSection(title))
     print(appendSection(title))
-elif state == 1:
+if state == "ADD":
     if targetSection>= len(sectionListLine)-1:
         targetText.insert(len(targetText)-2,appendLink(title,addr))
     else:
         targetText.insert(sectionListLine[targetSection+1],appendLink(title,addr))
     print(appendLink(title,addr))
-## WIP LINK REMOVER
-elif state == 2:
+
+#link remover
+elif state == "DEL":
     linkList = []
     linkListLine = []
     if targetSection >= len(sectionListLine)-1:
@@ -80,6 +82,8 @@ elif state == 2:
     targetLink = int(input())
     del targetText[linkListLine[targetLink]+1]
     del targetText[linkListLine[targetLink]]
+elif state == "DELSEC":
+    del targetText[sectionListLine[targetSection]]
 targetFile = open("/home/user/.config/homepage.html","w")
 for text in targetText:
     targetFile.write(text)
