@@ -1,19 +1,22 @@
 #!/bin/python
 import sys
 
-targetFile = open("/home/user/.config/homepage.html","r")
-targetText = targetFile.readlines()
-targetFile.close()
-
 # handles seting state, defalt state is 1
 print(sys.argv)
-if len(sys.argv) != 2:
+if len(sys.argv) == 1:
     state = "HELP"
 else:
-    state = sys.argv[1]
+    state = upper(sys.argv[1])
 if state == "HELP":
-    print("APPEND appends section to end of page\nADD appends link to section\nDEL deleats link\nDELSEC deleats the targeted section header\nHELP prints help")
+    print("interactive.py [COMMAND] FILE NAME\nAPPEND appends section to end of page\nADD appends link to section\nDEL deleats link\nDELSEC deleats the targeted section header\nHELP prints help")
     sys.exit()
+if len(sys.argv) == 3:
+    file = sys.argv[2]
+    if isfile(file) == False:
+        print(file + " NOT FOUND\ndefalting to /home/user/.config/homepage.html")
+        file = "/home/user/.config/homepage.html"
+else:
+    file = "/home/user/.config/homepage.html"
 
 if state == "APPEND" or state == "ADD":
     print("title")
@@ -25,6 +28,11 @@ if state == "APPEND" or state == "ADD":
 # 0 appends a section to the page
 # 1 appends a link to the end of the selected section
 # 2 edit mode? lets you remove bookmarks by section 
+
+targetFile = open(file,"r")
+targetText = targetFile.readlines()
+targetFile.close()
+
 
 
 def appendLink(title,addr):
@@ -47,6 +55,7 @@ if state != "APPEND":
     sectionReturnString = ""
     for i in range(0,len(sectionList)):
         sectionReturnString = sectionReturnString + sectionList[i] + " - " + str(i) + "\n"
+    print(sectionReturnString)
     targetSection = int(input())
 else:
     targetText.insert(len(targetText)-2,appendSection(title))
